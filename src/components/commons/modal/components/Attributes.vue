@@ -6,7 +6,8 @@ type PokemonData = {
   weight?: number;
   height?: number;
   types?: string[];
-  [key: string]: string | number | string[] | undefined;
+  [key: string]: string | number | string[] | undefined | null;
+  frontSprite?: string | null | undefined;
 }
 
 defineProps<{

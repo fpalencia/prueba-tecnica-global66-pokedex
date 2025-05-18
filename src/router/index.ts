@@ -27,7 +27,7 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/pokemons'
+      redirect: '/'
     }
   ],
 })
