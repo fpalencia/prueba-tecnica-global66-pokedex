@@ -1,6 +1,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
-export const useInfinityScroll = <T>(
+export const useCustomInfinityScroll = <T>(
   fetchFunction: (page: number, limit: number) => Promise<T[] | void>,
   options = {
     limit: 10,

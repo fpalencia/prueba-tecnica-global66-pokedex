@@ -2,7 +2,7 @@ import { ref, watchEffect } from "vue";
 import { usePokemonsList } from "../pokemons/usePokemonsList";
 import { usePokemonStore } from "../../store/usePokemonStore";
 import { useCustomVirtualList } from "../custom/useCustomVirtualList";
-import { useInfinityScroll } from "../custom/useInfinityScroll";
+import { useCustomInfinityScroll } from "../custom/useCustomInfinityScroll";
 
 export const usePokemons = (
   pokemonListProvider = usePokemonsList, 
@@ -57,7 +57,7 @@ export const usePokemons = (
     scrollOptions.container = scrollContainerRef.value
   })
 
-  useInfinityScroll(fetchNextPage, scrollOptions)
+  useCustomInfinityScroll(fetchNextPage, scrollOptions)
 
   return {
     list,

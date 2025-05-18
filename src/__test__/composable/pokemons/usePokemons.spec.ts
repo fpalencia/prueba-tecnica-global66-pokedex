@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { usePokemons } from '../../../composables/pokemons/usePokemons'
 import { usePokemonsList } from '../../../composables/pokemons/usePokemonsList'
 import { usePokemonStore } from '../../../store/usePokemonStore'
-import { useInfinityScroll } from '../../../composables/custom/useInfinityScroll'
+import { useCustomInfinityScroll } from '../../../composables/custom/useCustomInfinityScroll'
 import { useCustomVirtualList } from '../../../composables/custom/useCustomVirtualList'
 import { ref } from 'vue'
 
@@ -15,8 +15,8 @@ vi.mock('../../../store/usePokemonStore', () => ({
   usePokemonStore: vi.fn()
 }))
 
-vi.mock('../../../composables/custom/useInfinityScroll', () => ({
-  useInfinityScroll: vi.fn()
+vi.mock('../../../composables/custom/useCustomInfinityScroll', () => ({
+  useCustomInfinityScroll: vi.fn()
 }))
 
 vi.mock('../../../composables/custom/useCustomVirtualList', () => ({
@@ -51,7 +51,7 @@ describe('usePokemons', () => {
     } as any)
     
     // Mock de useInfiniteScroll
-    vi.mocked(useInfinityScroll).mockImplementation(() => ({
+    vi.mocked(useCustomInfinityScroll).mockImplementation(() => ({
       isLoading: ref(false),
       reset: vi.fn()
     }) as any)
