@@ -79,6 +79,7 @@ Este proyecto es una aplicación web tipo Pokedex desarrollada como prueba técn
 │   │       └── PokemonList.vue
 │   ├── composables
 │   │   ├── custom
+│   │   │   ├── useCustomLocalStorage.ts
 │   │   │   ├── useCustomVirtualList.ts
 │   │   │   └── useInfinityScroll.ts
 │   │   └── pokemons
@@ -122,6 +123,8 @@ Este proyecto es una aplicación web tipo Pokedex desarrollada como prueba técn
 │   │   │       └── PokemonList.spec.ts
 │   │   ├── composable
 │   │   │   ├── custom
+│   │   │   │   ├── useCustomInfinityScroll.spec.ts
+│   │   │   │   ├── useCustomLocalStorage.spec.ts
 │   │   │   │   └── useCustomVirtualList.spec.ts
 │   │   │   └── pokemons
 │   │   │       ├── usePokemonCardDetails.spec.ts
