@@ -1,7 +1,17 @@
 <script setup lang="ts">
-import { usePokemonSearch } from '../../composables/pokemons/usePokemonSearch'
+import { usePokemonStore } from '../../store/usePokemonStore'
+import { computed } from 'vue'
 
-const { searchValue, handleSearch, clearSearch } = usePokemonSearch()
+const store = usePokemonStore()
+
+const searchValue = computed({
+  get: () => store.searchTerm,
+  set: (value) => store.setSearchTerm(value)
+})
+
+const clearSearch = () => {
+  store.setSearchTerm('')
+}
 </script>
 
 <template>
@@ -27,7 +37,6 @@ const { searchValue, handleSearch, clearSearch } = usePokemonSearch()
         name="search"
         placeholder="Search"
         v-model="searchValue"
-        @keyup.enter="handleSearch"
       />
       <button 
         v-if="searchValue" 

@@ -138,8 +138,6 @@ Este proyecto es una aplicación web tipo Pokedex desarrollada como prueba técn
 │   │       ├── HomeView.spec.ts
 │   │       ├── pokemons
 │   │       │   └── PokemonsView.spec.ts
-│   │       ├── pokemon-search
-│   │       │   └── PokemonSearchView.spec.ts
 │   │       └── pokemons-favorite
 │   │           └── PokemonsFavoriteView.spec.ts
 │   ├── types
@@ -150,8 +148,6 @@ Este proyecto es una aplicación web tipo Pokedex desarrollada como prueba técn
 │   │   ├── HomeView.vue
 │   │   ├── pokemons
 │   │   │   └── PokemonsView.vue
-│   │   ├── pokemon-search
-│   │   │   └── PokemonSearchView.vue
 │   │   └── pokemons-favorite
 │   │       └── PokemonsFavoriteView.vue
 

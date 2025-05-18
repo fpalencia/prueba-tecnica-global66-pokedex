@@ -7,6 +7,7 @@ export const usePokemonStore = defineStore('pokemons', () => {
   const initialLoad = ref<boolean>(false)
   const pokemons = ref<Record<string, string>>({})
   const favorites = useStorage<Record<string, string>>('pokemon-favorites', {})
+  const searchTerm = ref<string>('')
   
   // Actions
   const setInitialLoad = (newInitialLoad: boolean) => {
@@ -31,14 +32,30 @@ export const usePokemonStore = defineStore('pokemons', () => {
     return Boolean(favorites.value[pokemonName])
   }
 
+  const setSearchTerm = (term: string) => {
+    searchTerm.value = term
+  }
+
+  const getFilteredPokemonList = (): string[] => {
+    const pokemonList = Object.keys(pokemons.value)
+    if (!searchTerm.value.trim()) return pokemonList
+    
+    return pokemonList.filter(pokemon => 
+      pokemon.toLowerCase().includes(searchTerm.value.toLowerCase())
+    )
+  }
+
   return {
     setPokemons,
     setInitialLoad,
     addFavorite,
     removeFavorite,
     isFavorite,
+    setSearchTerm,
+    getFilteredPokemonList,
     initialLoad,
     pokemons,
-    favorites
+    favorites,
+    searchTerm
   }
 })

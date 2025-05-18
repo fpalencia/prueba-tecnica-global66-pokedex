@@ -5,6 +5,9 @@ import IconPokeball from '../../../assets/icons/IconPokeball.vue';
 import PokemonList from '../../../components/pokemon/PokemonList.vue';
 import { usePokemons } from '../../../composables/pokemons/usePokemons';
 import { ref, computed } from 'vue';
+import { createPinia, setActivePinia } from 'pinia';
+import { createRouter, createWebHistory } from 'vue-router';
+import { usePokemonStore } from '../../../store/usePokemonStore';
 
 // Mock de los componentes y composables
 vi.mock('../../../assets/icons/IconPokeball.vue', () => ({
@@ -28,27 +31,52 @@ vi.mock('../../../composables/pokemons/usePokemons', () => ({
   usePokemons: vi.fn()
 }));
 
+// Mock del store
+vi.mock('../../../store/usePokemonStore', () => ({
+  usePokemonStore: vi.fn()
+}));
+
+// Crear un router mock para las pruebas
+const createTestRouter = () => createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', name: 'home', component: { template: '<div></div>' } },
+    { path: '/pokemons', name: 'pokemons', component: { template: '<div></div>' } },
+    { path: '/search', name: 'pokemon-search', component: { template: '<div></div>' } },
+  ]
+});
+
 describe('PokemonsView', () => {
+  let router;
+  const mockGetFilteredPokemonList = vi.fn();
+  const mockSetSearchTerm = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
+    // Configurar Pinia para las pruebas
+    setActivePinia(createPinia());
+    // Configurar router para las pruebas
+    router = createTestRouter();
+    
+    // Configurar mock del store por defecto
+    mockGetFilteredPokemonList.mockReturnValue([]);
+    vi.mocked(usePokemonStore).mockReturnValue({
+      getFilteredPokemonList: mockGetFilteredPokemonList,
+      setSearchTerm: mockSetSearchTerm
+    } as any);
   });
 
   it('muestra el spinner de carga cuando initialLoad es true', () => {
     // Configurar el mock del composable para el estado de carga inicial
     vi.mocked(usePokemons).mockReturnValue({
-      list: computed(() => []),
-      initialLoad: ref(true),
-      scrollContainerRef: ref(null),
-      containerProps: {
-        ref: ref(null),
-        style: { height: '100%', overflow: 'auto', width: '100%' },
-        onScroll: vi.fn()
-      },
-      wrapperProps: { style: { height: '100%', position: 'relative', width: '100%' } },
-      fetchNextPage: vi.fn()
-    });
+      initialLoad: ref(true)
+    } as any);
 
-    const wrapper = mount(PokemonsView);
+    const wrapper = mount(PokemonsView, {
+      global: {
+        plugins: [router]
+      }
+    });
     
     expect(wrapper.findComponent(IconPokeball).exists()).toBe(true);
     expect(wrapper.find('.animate-spin').exists()).toBe(true);
@@ -56,109 +84,76 @@ describe('PokemonsView', () => {
   });
 
   it('muestra la lista de pokemons cuando initialLoad es false', () => {
-    // Datos de ejemplo para la lista de pokemons
-    const pokemonList = [
-      { data: 'bulbasaur' },
-      { data: 'charmander' },
-      { data: 'squirtle' }
-    ];
+    // Mock de la lista de Pokémons filtrada
+    const pokemonList = ['bulbasaur', 'charmander', 'squirtle'];
+    mockGetFilteredPokemonList.mockReturnValue(pokemonList);
     
-    // Configurar el mock del composable para el estado con datos cargados
+    // Configurar el mock del composable para el estado cuando los datos están cargados
     vi.mocked(usePokemons).mockReturnValue({
-      list: computed(() => pokemonList.map((pokemon, index) => ({ ...pokemon, index }))),
-      initialLoad: ref(false),
-      scrollContainerRef: ref(null),
-      containerProps: {
-        ref: ref(null),
-        style: { height: '100%', overflow: 'auto', width: '100%' },
-        onScroll: vi.fn()
-      },
-      wrapperProps: { style: { height: '100%', position: 'relative', width: '100%' } },
-      fetchNextPage: vi.fn()
-    });
+      initialLoad: ref(false)
+    } as any);
 
-    const wrapper = mount(PokemonsView);
+    const wrapper = mount(PokemonsView, {
+      global: {
+        plugins: [router]
+      }
+    });
     
     expect(wrapper.findComponent(PokemonList).exists()).toBe(true);
-    expect(wrapper.findComponent(PokemonList).props('pokemons')).toEqual(['bulbasaur', 'charmander', 'squirtle']);
+    expect(wrapper.findComponent(PokemonList).props('pokemons')).toEqual(pokemonList);
   });
 
-  it('muestra el spinner de carga adicional cuando hay elementos en la lista', () => {
-    // Datos de ejemplo para la lista de pokemons
-    const pokemonList = [
-      { data: 'bulbasaur' },
-      { data: 'charmander' }
-    ];
+  it('muestra mensaje cuando la lista filtrada está vacía', () => {
+    // Mock de la lista de Pokémons filtrada vacía
+    mockGetFilteredPokemonList.mockReturnValue([]);
     
-    // Configurar el mock del composable para el estado con datos cargados
+    // Configurar el mock del composable para el estado cuando no hay resultados
     vi.mocked(usePokemons).mockReturnValue({
-      list: computed(() => pokemonList.map((pokemon, index) => ({ ...pokemon, index }))),
-      initialLoad: ref(false),
-      scrollContainerRef: ref(null),
-      containerProps: {
-        ref: ref(null),
-        style: { height: '100%', overflow: 'auto', width: '100%' },
-        onScroll: vi.fn()
-      },
-      wrapperProps: { style: { height: '100%', position: 'relative', width: '100%' } },
-      fetchNextPage: vi.fn()
-    });
+      initialLoad: ref(false)
+    } as any);
 
-    const wrapper = mount(PokemonsView);
+    const wrapper = mount(PokemonsView, {
+      global: {
+        plugins: [router]
+      }
+    });
     
-    // Debe existir el PokemonList
-    expect(wrapper.findComponent(PokemonList).exists()).toBe(true);
+    // Verificar que el PokemonList no se muestra
+    expect(wrapper.findComponent(PokemonList).exists()).toBe(false);
     
-    // Debe existir el spinner adicional al final
-    const spinners = wrapper.findAllComponents(IconPokeball);
-    expect(spinners.length).toBe(1);
-    expect(wrapper.find('.py-6 .animate-spin').exists()).toBe(true);
+    // Verificar que se muestra el mensaje de "Uh-oh!"
+    expect(wrapper.text()).toContain('Uh-oh!');
+    expect(wrapper.text()).toContain('You look lost on your journey!');
+    
+    // Verificar que existe el botón de "Go back home"
+    expect(wrapper.find('button').text()).toContain('Go back home');
   });
 
-  it('no muestra el spinner adicional cuando la lista está vacía', () => {
-    // Configurar el mock del composable para el estado con lista vacía
+  it('navega a home y limpia la búsqueda al hacer clic en "Go back home"', async () => {
+    // Mock de la lista de Pokémons filtrada vacía
+    mockGetFilteredPokemonList.mockReturnValue([]);
+    
+    // Configurar el mock del composable para el estado cuando no hay resultados
     vi.mocked(usePokemons).mockReturnValue({
-      list: computed(() => []),
-      initialLoad: ref(false),
-      scrollContainerRef: ref(null),
-      containerProps: {
-        ref: ref(null),
-        style: { height: '100%', overflow: 'auto', width: '100%' },
-        onScroll: vi.fn()
-      },
-      wrapperProps: { style: { height: '100%', position: 'relative', width: '100%' } },
-      fetchNextPage: vi.fn()
+      initialLoad: ref(false)
+    } as any);
+
+    // Espiar el método push del router
+    const pushSpy = vi.spyOn(router, 'push');
+
+    const wrapper = mount(PokemonsView, {
+      global: {
+        plugins: [router]
+      }
     });
-
-    const wrapper = mount(PokemonsView);
     
-    // Debe existir el PokemonList (aunque esté vacío)
-    expect(wrapper.findComponent(PokemonList).exists()).toBe(true);
+    // Hacer clic en el botón "Go back home"
+    await wrapper.find('button').trigger('click');
     
-    // No debe existir el spinner adicional al final
-    expect(wrapper.find('.py-6 .animate-spin').exists()).toBe(false);
-  });
-
-  it('asigna correctamente la referencia del contenedor de scroll', () => {
-    const scrollContainerRef = ref(null);
+    // Verificar que se llamó a router.push con los parámetros correctos
+    expect(pushSpy).toHaveBeenCalledWith({ name: 'home' });
     
-    // Configurar el mock del composable
-    vi.mocked(usePokemons).mockReturnValue({
-      list: computed(() => []),
-      initialLoad: ref(false),
-      scrollContainerRef,
-      containerProps: {
-        ref: ref(null),
-        style: { height: '100%', overflow: 'auto', width: '100%' },
-        onScroll: vi.fn()
-      },
-      wrapperProps: { style: { height: '100%', position: 'relative', width: '100%' } },
-      fetchNextPage: vi.fn()
-    });
-
-    const wrapper = mount(PokemonsView);
-    
-    // Verificar que el elemento div tiene la referencia correcta
-    expect(wrapper.find('[ref="scrollContainerRef"]').exists()).toBe(false);
+    // Verificar que se limpió el término de búsqueda
+    expect(mockSetSearchTerm).toHaveBeenCalledWith('');
   });
 });

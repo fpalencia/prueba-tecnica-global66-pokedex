@@ -1,4 +1,4 @@
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { Router, RouteLocationNormalizedLoaded } from 'vue-router'
 
@@ -10,9 +10,18 @@ export const usePokemonSearch = (
   const router = customRouter || useRouter()
 
   const searchValue = ref(route.query.name as string || '')
+  const localPokemonList = ref<string[]>([])
 
   watchEffect(() => {
     searchValue.value = route.query.name as string || ''
+  })
+
+  const filteredPokemons = computed(() => {
+    if (!searchValue.value.trim()) return localPokemonList.value
+    
+    return localPokemonList.value.filter(pokemon => 
+      pokemon.toLowerCase().includes(searchValue.value.toLowerCase())
+    )
   })
 
   const handleSearch = () => {
@@ -31,9 +40,15 @@ export const usePokemonSearch = (
     })
   }
 
+  const updatePokemonList = (pokemons: string[]) => {
+    localPokemonList.value = pokemons
+  }
+
   return {
     searchValue,
+    filteredPokemons,
     handleSearch,
-    clearSearch
+    clearSearch,
+    updatePokemonList
   }
 } 

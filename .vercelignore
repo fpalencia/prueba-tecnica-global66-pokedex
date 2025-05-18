@@ -1,8 +1,0 @@
-**/*.spec.*
-**/*.test.*
-**/vitest.setup.*
-**/tests/**
-**/node_modules/**
-**/cypress
-**/e2e
-**/.git 

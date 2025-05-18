@@ -47,11 +47,17 @@ export const usePokemons = (
     })
   }
 
-  useInfinityScroll(fetchNextPage, {
+  const scrollOptions = {
     limit: options.limit,
     scrollOffset: options.scrollOffset,
-    container: scrollContainerRef.value
+    container: null as HTMLElement | null
+  }
+
+  watchEffect(() => {
+    scrollOptions.container = scrollContainerRef.value
   })
+
+  useInfinityScroll(fetchNextPage, scrollOptions)
 
   return {
     list,

@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { defineEmits, ref } from 'vue';
+import { defineEmits, ref, onMounted, watch } from 'vue';
 import BtnAddFavorite from '../BtnAddFavorite.vue';
 import { usePokemonCardDetails } from '../../../composables/pokemons/usePokemonCardDetails';
 import IconPokeball from '../../../assets/icons/IconPokeball.vue';
 import Attributes from './components/Attributes.vue';
+import SkeletonAttributes from './components/SkeletonAttributes.vue';
+import SkeletonButtons from './components/SkeletonButtons.vue';
 
 type Props = {
   pokemon: string
@@ -11,8 +13,21 @@ type Props = {
 
 const props = defineProps<Props>()
 const isImageLoading = ref(true)
+const isDataLoading = ref(true)
 
 const { copied, copy, pokemon } = usePokemonCardDetails(props.pokemon)
+
+onMounted(() => {
+  if (pokemon.value) {
+    isDataLoading.value = false
+  }
+})
+
+watch(pokemon, (newValue) => {
+  if (newValue) {
+    isDataLoading.value = false
+  }
+})
 
 const emit = defineEmits(['close'])
 
@@ -49,34 +64,19 @@ const handleImageLoad = () => {
       </div>
 
       <div class="p-5">
-        <Attributes v-if="pokemon" :pokemon="pokemon" />
-<!--         <div class="py-2 border-b border-gray-200 flex items-center">
-          <span class="text-gray-600 font-semibold w-20 text-gray-dark">Name:</span>
-          <span class="text-gray-800">{{ pokemon?.name ? capitalize(pokemon.name) : '' }}</span>
-        </div>
-
-        <div class="py-2 border-b border-gray-200 flex items-center">
-          <span class="text-gray-600 font-semibold w-20 text-gray-dark">Weight:</span>
-          <span class="text-gray-800">{{ pokemon?.weight }}</span>
-        </div>
-
-        <div class="py-2 border-b border-gray-200 flex items-center">
-          <span class="text-gray-600 font-semibold w-20 text-gray-dark">Height:</span>
-          <span class="text-gray-800">{{ pokemon?.height }}</span>
-        </div>
-
-        <div class="py-2 border-b border-gray-200 flex items-center">
-          <span class="text-gray-600 font-semibold w-20 text-gray-dark">Types:</span>
-          <span class="text-gray-800">{{pokemon?.types ? pokemon.types.map(type => capitalize(type)).join(', ') : 'No types available' }}</span>
-        </div> -->
+        <SkeletonAttributes v-if="isDataLoading" />
+        <Attributes v-else-if="pokemon" :pokemon="pokemon" />
       </div>
 
       <div class="pt-0 pl-5 pr-5 pb-5 flex items-center justify-between">
-        <button @click="copy()"
-          class="bg-secondary hover:bg-accent text-white font-bold py-2 px-6 rounded-full transition-colors cursor-pointer">
-          {{ copied ? 'Copied!' : 'Share to my friends' }}
-        </button>
-        <BtnAddFavorite :name="pokemon?.name ?? ''" />
+        <SkeletonButtons v-if="isDataLoading" />
+        <template v-else>
+          <button @click="copy()"
+            class="bg-secondary hover:bg-accent text-white font-bold py-2 px-6 rounded-full transition-colors cursor-pointer">
+            {{ copied ? 'Copied!' : 'Share to my friends' }}
+          </button>
+          <BtnAddFavorite :name="pokemon?.name ?? ''" />
+        </template>
       </div>
     </div>
   </div>

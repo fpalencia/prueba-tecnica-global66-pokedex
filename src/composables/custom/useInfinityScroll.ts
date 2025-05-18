@@ -49,11 +49,21 @@ export const useInfinityScroll = <T>(
   
   onMounted(() => {
     loadItems();
-    window.addEventListener('scroll', checkScroll);
+    
+    const scrollTarget = options.container || window;
+    scrollTarget.addEventListener('scroll', checkScroll);
+    
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        setTimeout(checkScroll, 100);
+      }
+    });
   });
   
   onUnmounted(() => {
-    window.removeEventListener('scroll', checkScroll);
+    const scrollTarget = options.container || window;
+    scrollTarget.removeEventListener('scroll', checkScroll);
+    document.removeEventListener('visibilitychange', () => {});
   });
   
   return {

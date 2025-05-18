@@ -11,16 +11,16 @@ const handleFilterChange = (filter: string) => {
 
 </script>
 <template>
-  <div class="flex flex-col">
-    <header class="w-full sticky top-0 bg-gray-light">
+  <div class="flex flex-col min-h-screen">
+    <header class="w-full sticky top-0 bg-gray-light z-10">
       <div class="container mx-auto px-4">
         <InputSearch />
       </div>
     </header>
-      <main>
-        <RouterView />
-      </main>
-    <footer class="fixed bottom-0 w-full bg-white z-10 py-4 shadow-lg">
+    <main class="flex-1">
+      <RouterView />
+    </main>
+    <footer class="sticky bottom-0 w-full bg-white z-10 py-4 shadow-lg">
       <div class="container mx-auto px-4">
         <BtnFooter @change-filter="handleFilterChange" />
       </div>
