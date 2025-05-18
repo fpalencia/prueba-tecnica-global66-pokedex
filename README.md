@@ -173,4 +173,4 @@ npm run test:watch
 
 ### Estructura de las pruebas
 
-Las pruebas se encuentran en el directorio `src/__test__` y siguen la misma estructura que los componentes del proyecto. Cada componente principal tiene su propio archivo de prueba.
+Las pruebas se encuentran en el directorio `src/__test__` y siguen la misma estructura que los componentes del proyecto. Cada componente, composable, store, helper tiene su propio archivo de prueba.
