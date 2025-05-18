@@ -1,0 +1,1 @@
+# prueba-tecnica-global66-pokedex
