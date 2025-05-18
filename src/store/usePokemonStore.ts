@@ -1,12 +1,12 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import { useStorage } from '@vueuse/core';
+import { useCustomLocalStorage } from '../composables/custom/useCustomLocalStorage';
 
 export const usePokemonStore = defineStore('pokemons', () => {
   // State
   const initialLoad = ref<boolean>(false)
   const pokemons = ref<Record<string, string>>({})
-  const favorites = useStorage<Record<string, string>>('pokemon-favorites', {})
+  const favorites = useCustomLocalStorage<Record<string, string>>('pokemon-favorites', {})
   const searchTerm = ref<string>('')
   
   // Actions

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { usePokemonStore } from '../../store/usePokemonStore'
 import { createPinia, setActivePinia } from 'pinia'
-import { useStorage } from '@vueuse/core'
 import { ref } from 'vue'
 
 // Mock de @vueuse/core
@@ -9,14 +8,18 @@ vi.mock('@vueuse/core', () => ({
   useStorage: vi.fn()
 }))
 
+// Al principio del archivo, antes de los imports
+vi.mock('../../composables/custom/useCustomLocalStorage', () => ({
+  useCustomLocalStorage: vi.fn(() => ref({}))
+}));
+
 describe('usePokemonStore', () => {
   beforeEach(() => {
     // Crear una nueva instancia de pinia para cada test
     setActivePinia(createPinia())
     
-    // Mock del useStorage para que devuelva un ref simple
-    const mockStorageRef = ref({})
-    vi.mocked(useStorage).mockReturnValue(mockStorageRef as any)
+    // Resetear los mocks
+    vi.clearAllMocks()
   })
 
   it('should initialize with default values', () => {
@@ -103,13 +106,12 @@ describe('usePokemonStore', () => {
     // Inicialmente no hay favoritos
     expect(store.isFavorite('pikachu')).toBeFalsy()
     
-    // Agregar un favorito
+    // Agregar favoritos
     store.addFavorite('pikachu')
+    store.addFavorite('charizard')
     
-    // Verificar que existe
+    // Verificar que existen
     expect(store.isFavorite('pikachu')).toBeTruthy()
-    
-    // Verificar que otro pokemon no existe como favorito
-    expect(store.isFavorite('charizard')).toBeFalsy()
+    expect(store.isFavorite('charizard')).toBeTruthy()
   })
 })

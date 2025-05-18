@@ -111,8 +111,10 @@ describe('useCustomInfinityScroll', () => {
     mockFetchFunction.mockResolvedValueOnce(secondBatch);
     
     // Usar el composable con un límite pequeño para asegurar que hasMore sea true
-    const { items, loadItems, page } = useCustomInfinityScroll<TestItem>(mockFetchFunction, {
-      limit: 2 // Asegurarse de que el límite coincida con el tamaño de firstBatch
+    const { items, loadItems } = useCustomInfinityScroll<TestItem>(mockFetchFunction, {
+      limit: 2,
+      scrollOffset: 10,
+      container: null
     });
     
     // Esperar a que se complete la carga inicial
@@ -122,11 +124,6 @@ describe('useCustomInfinityScroll', () => {
     // Verificar primera carga
     expect(items.value).toEqual(firstBatch);
     expect(mockFetchFunction).toHaveBeenCalledTimes(1);
-    
-    // Incrementar manualmente la página si es necesario
-    if (page && typeof page.value === 'number') {
-      page.value += 1;
-    }
     
     // Llamar a loadItems para cargar la siguiente página
     await loadItems();
