@@ -4,7 +4,7 @@ export const useCustomInfinityScroll = <T>(
   fetchFunction: (page: number, limit: number) => Promise<T[] | void>,
   options = {
     limit: 10,
-    scrollOffset: 20,
+    scrollOffset: 100,
     container: null as HTMLElement | null
   }
 ) => {
@@ -40,9 +40,13 @@ export const useCustomInfinityScroll = <T>(
   
   const checkScroll = () => {
     const element = options.container || document.documentElement;
-    const { scrollTop, scrollHeight, clientHeight } = element;
+    const windowHeight = window.innerHeight;
+    const documentHeight = element.scrollHeight;
+    const scrollTop = window.scrollY || element.scrollTop;
     
-    if (scrollTop + clientHeight >= scrollHeight - options.scrollOffset) {
+    const scrolledToBottom = (windowHeight + scrollTop + options.scrollOffset) >= documentHeight;
+    
+    if (scrolledToBottom && !loading.value) {
       loadItems();
     }
   };

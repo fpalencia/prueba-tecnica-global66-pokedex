@@ -18,6 +18,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  server: {
+    host: '0.0.0.0', // Esto permite conexiones desde cualquier IP
+    port: 3000, // Puedes elegir el puerto que prefieras
+  },
   build: {
     // Configuración para Vercel
     outDir: 'dist',
