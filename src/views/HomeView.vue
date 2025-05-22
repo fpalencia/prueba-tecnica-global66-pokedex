@@ -14,7 +14,7 @@ const handleGetStarted = () => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+  <div class="flex flex-col items-center justify-center min-h-screen bg-white p-4 overflow-x-hidden">
     <div class="w-100 h-100 mb-6">
       <IconPikachu class="w-full h-full" />
     </div>
